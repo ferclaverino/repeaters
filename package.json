@@ -1,0 +1,27 @@
+{
+  "name": "repeaters",
+  "version": "1.0.0",
+  "description": "Mapa de estaciones repetidoras",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html",
+    "build": "parcel build --public-url . index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ferclaverino/repeaters.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ferclaverino/repeaters/issues"
+  },
+  "homepage": "https://github.com/ferclaverino/repeaters#readme",
+  "dependencies": {
+    "ol": "^6.5.0"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
+  }
+}
