@@ -24,7 +24,6 @@
   "homepage": "https://github.com/ferclaverino/repeaters#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "jquery": "^3.5.1",
     "ol": "^6.5.0"
   },
   "devDependencies": {
