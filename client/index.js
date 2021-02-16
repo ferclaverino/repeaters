@@ -1,9 +1,10 @@
+import "regenerator-runtime/runtime";
 import { RepatersMap } from "./map";
 import { RepeaterService } from "./repeater-service";
 
-window.addEventListener("load", (event) => {
+window.addEventListener("load", async (event) => {
   const map = new RepatersMap("map", "tooltip");
   const repeaterService = new RepeaterService();
-  const repeaters = repeaterService.getAll();
+  const repeaters = await repeaterService.getAll();
   map.addRepeaters(repeaters);
 });
