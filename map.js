@@ -1,3 +1,4 @@
+import "ol/ol.css";
 import Feature from "ol/Feature.js";
 import Geolocation from "ol/Geolocation.js";
 import Map from "ol/Map.js";
@@ -8,6 +9,7 @@ import { Tile as TileLayer, Vector as VectorLayer } from "ol/layer.js";
 import { OSM, Vector as VectorSource } from "ol/source.js";
 import { Circle as CircleStyle, Fill, Stroke, Style, Icon } from "ol/style.js";
 import { fromLonLat } from "ol/proj";
+import { ScaleLine, defaults as defaultControls } from "ol/control";
 
 export class RepatersMap {
   constructor(mapId, tooltipId) {
@@ -19,6 +21,7 @@ export class RepatersMap {
     const geoLocationLayer = this._buildGeoLocationLayer(view);
 
     this._map = new Map({
+      controls: defaultControls().extend([this._buildScaleControl()]),
       layers: [
         new TileLayer({
           source: new OSM(),
@@ -30,6 +33,17 @@ export class RepatersMap {
     });
 
     this._buildTooltip(tooltipId, this._map);
+  }
+
+  _buildScaleControl() {
+    const scaleControl = new ScaleLine({
+      units: "metric",
+      bar: true,
+      steps: 8,
+      text: true,
+      minWidth: 400,
+    });
+    return scaleControl;
   }
 
   _buildGeoLocationLayer(view) {
@@ -92,11 +106,9 @@ export class RepatersMap {
   }
 
   _buildTooltip(tooltipId, map) {
-    const element = document.getElementById(tooltipId);
-
-    console.log(element);
+    const tooltipElement = document.getElementById(tooltipId);
     const popup = new Overlay({
-      element: element,
+      element: tooltipElement,
       positioning: "bottom-center",
       stopEvent: false,
       offset: [0, -10],
@@ -111,23 +123,19 @@ export class RepatersMap {
       if (feature) {
         const coordinates = feature.getGeometry().getCoordinates();
         popup.setPosition(coordinates);
-        $(element).popover({
-          placement: "top",
-          html: true,
-          title: feature.get("name"),
-          content: `Frequencia: ${feature.get("frequency")}<br/>
-                    Subtono: ${feature.get("subtone")}`,
-        });
-        $(element).popover("show");
+        const repeater = feature.get("repeater");
+        $(tooltipElement).popover("dispose");
+        $(tooltipElement).popover(this._buildPopover(repeater));
+        $(tooltipElement).popover("show");
       } else {
-        $(element).popover("dispose");
+        $(tooltipElement).popover("dispose");
       }
     });
 
     // change mouse cursor when over marker
     map.on("pointermove", (e) => {
       if (e.dragging) {
-        $(element).popover("destroy");
+        $(tooltipElement).popover("dispose");
         return;
       }
       const pixel = map.getEventPixel(e.originalEvent);
@@ -136,8 +144,19 @@ export class RepatersMap {
     });
   }
 
-  addRepeaters() {
-    const repeaterFeatures = this._buildRepeaterFeatures();
+  _buildPopover(repeater) {
+    const frequency = repeater.frequency.toLocaleString("ES-ar");
+    return {
+      placement: "top",
+      html: true,
+      title: repeater.name,
+      content: `Frequencia: ${frequency} KHz (${repeater.diff})<br/>
+                Subtono: ${repeater.subtone}`,
+    };
+  }
+
+  addRepeaters(repeaters) {
+    const repeaterFeatures = this._buildRepeaterFeatures(repeaters);
     this._buildRepeatersLayer(repeaterFeatures, this._map);
   }
 
@@ -150,31 +169,17 @@ export class RepatersMap {
     });
   }
 
-  _buildRepeaterFeatures() {
-    return [this._buildRepeaterFeature()];
+  _buildRepeaterFeatures(repeaters) {
+    return repeaters.map(this._buildRepeaterFeature);
   }
 
-  _buildRepeaterFeature() {
-    const position = fromLonLat([-58.4162405, -34.6437888]);
-    console.log("position", position);
+  _buildRepeaterFeature(repeater) {
+    const position = fromLonLat([repeater.longitude, repeater.latitude]);
 
     const repeaterFeature = new Feature({
       geometry: new Point(position),
-      name: "Radio Club Argentino",
-      frequency: "146.910 KHz (-600)",
-      subtone: 123,
+      repeater: repeater,
     });
-
-    // const repeaterStyle = new Style({
-    //   image: new Icon(
-    //     /** @type {module:ol/style/Icon~Options} */ ({
-    //       anchor: [0.5, 46],
-    //       anchorXUnits: "fraction",
-    //       anchorYUnits: "pixels",
-    //       src: "icon.png",
-    //     })
-    //   ),
-    // });
 
     const repeaterStyle = new Style({
       image: new CircleStyle({
