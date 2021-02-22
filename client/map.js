@@ -183,7 +183,7 @@ export class RepatersMap {
 
     const repeaterStyle = new Style({
       image: new CircleStyle({
-        radius: 18,
+        radius: 12,
         fill: new Fill({
           color: "#CC0000",
         }),
