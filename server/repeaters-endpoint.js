@@ -29,13 +29,13 @@ async function getRows() {
     .map((i) => i + 1)
     .map((rowIndex) => {
       return {
-        name: sheet.getCell(rowIndex, 0).value,
-        signal: sheet.getCell(rowIndex, 1).value,
-        frequency: sheet.getCell(rowIndex, 2).value,
-        diff: sheet.getCell(rowIndex, 3).value,
-        subtone: sheet.getCell(rowIndex, 4).value,
-        latitude: sheet.getCell(rowIndex, 5).value,
-        longitude: sheet.getCell(rowIndex, 6).value,
+        name: sheet.getCell(rowIndex, 0).formattedValue,
+        signal: sheet.getCell(rowIndex, 1).formattedValue,
+        frequency: sheet.getCell(rowIndex, 2).formattedValue,
+        diff: sheet.getCell(rowIndex, 3).formattedValue,
+        subtone: sheet.getCell(rowIndex, 4).formattedValue,
+        latitude: sheet.getCell(rowIndex, 5).formattedValue,
+        longitude: sheet.getCell(rowIndex, 6).formattedValue,
       };
     });
   return rows;
