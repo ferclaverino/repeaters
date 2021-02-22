@@ -10,7 +10,6 @@ async function getSheet() {
   const doc = new GoogleSpreadsheet(
     "1Vs91c_Fiee7X7HgXeJZ2s7F8Zd5934b3QCabbh6UPtw"
   );
-  // await doc.useServiceAccountAuth(spreadSheetCredentials);
 
   await doc.useServiceAccountAuth({
     client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
