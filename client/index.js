@@ -4,6 +4,10 @@ import { RepeaterService } from "./repeater-service";
 
 const height = $(window).height();
 
+console.log(
+  "Querés colaborar? Bienvenide: https://github.com/ferclaverino/repeaters"
+);
+
 window.addEventListener("load", async (event) => {
   $("#map").height(height);
 
