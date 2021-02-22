@@ -59,7 +59,10 @@ export class RepatersMap {
 
     // update the HTML page when the position changes.
     geolocation.on("change", () => {
-      view.centerOn(geolocation.getPosition(), [0, 0], [0, 0]);
+      if (!this.isCenterOnGeolocation) {
+        view.centerOn(geolocation.getPosition(), [0, 0], [0, 0]);
+        this.isCenterOnGeolocation = true;
+      }
     });
 
     // handle geolocation error.
