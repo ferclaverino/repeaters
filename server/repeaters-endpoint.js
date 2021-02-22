@@ -22,9 +22,9 @@ async function getSheet() {
 }
 
 async function getRows() {
-  const rowsCount = 2;
+  const rowsCount = 250;
   const sheet = await getSheet();
-  await sheet.loadCells("A2:G3");
+  await sheet.loadCells(`A2:G${rowsCount + 1}`);
   const rows = [...Array(rowsCount).keys()]
     .map((i) => i + 1)
     .map((rowIndex) => {
