@@ -145,7 +145,7 @@ export class RepatersMap {
   }
 
   _buildPopover(repeater) {
-    const frequency = repeater.frequency.toLocaleString("ES-ar");
+    const frequency = parseInt(repeater.frequency).toLocaleString("ES-ar");
     return {
       placement: "top",
       html: true,
