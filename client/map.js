@@ -10,6 +10,7 @@ import { OSM, Vector as VectorSource } from "ol/source.js";
 import { Circle as CircleStyle, Fill, Stroke, Style, Icon } from "ol/style.js";
 import { fromLonLat } from "ol/proj";
 import { ScaleLine, defaults as defaultControls } from "ol/control";
+import LineString from "ol/geom/LineString.js";
 
 export class RepatersMap {
   constructor(mapId, tooltipId) {
@@ -77,6 +78,7 @@ export class RepatersMap {
     geolocation.on("change:position", () => {
       const coordinates = geolocation.getPosition();
       positionFeature.setGeometry(coordinates ? new Point(coordinates) : null);
+      this.currentCoordinates = coordinates;
     });
 
     geolocation.setTracking(true);
@@ -131,7 +133,7 @@ export class RepatersMap {
 
         const repeaters = features.map((feature) => feature.get("repeater"));
         $(tooltipElement).popover("dispose");
-        $(tooltipElement).popover(this._buildPopover(repeaters));
+        $(tooltipElement).popover(this._buildPopover(repeaters, coordinates));
         $(tooltipElement).popover("show");
       } else {
         $(tooltipElement).popover("dispose");
@@ -150,12 +152,15 @@ export class RepatersMap {
     });
   }
 
-  _buildPopover(repeaters) {
+  _buildPopover(repeaters, coordinates) {
+    const line = new LineString([this.currentCoordinates, coordinates]);
+    const distanteInKm = Math.round((line.getLength() / 1000) * 100) / 100;
+
     const firstRepeater = repeaters[0];
     return {
       placement: "top",
       html: true,
-      title: `${firstRepeater.signal} - ${firstRepeater.name}`,
+      title: `${firstRepeater.signal} - ${firstRepeater.name} (${distanteInKm} km)`,
       content: repeaters
         .filter((repeater) => repeater.signal === firstRepeater.signal)
         .map((repeater) => {
