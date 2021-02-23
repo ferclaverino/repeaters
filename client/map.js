@@ -57,7 +57,7 @@ export class RepatersMap {
     const positionFeature = this._buildPositionFeature();
     const accuracyFeature = new Feature();
 
-    // update the HTML page when the position changes.
+    // update the HTML page when the position gets 1st value
     geolocation.on("change", () => {
       if (!this.isCenterOnGeolocation) {
         view.centerOn(geolocation.getPosition(), [0, 0], [0, 0]);
@@ -120,15 +120,18 @@ export class RepatersMap {
 
     // display popup on click
     map.on("click", (evt) => {
-      const feature = map.forEachFeatureAtPixel(evt.pixel, (feature) => {
-        return feature;
+      const features = [];
+      map.forEachFeatureAtPixel(evt.pixel, (feature) => {
+        features.push(feature);
       });
-      if (feature) {
-        const coordinates = feature.getGeometry().getCoordinates();
+      if (features.length) {
+        const firstFeature = features[0];
+        const coordinates = firstFeature.getGeometry().getCoordinates();
         popup.setPosition(coordinates);
-        const repeater = feature.get("repeater");
+
+        const repeaters = features.map((feature) => feature.get("repeater"));
         $(tooltipElement).popover("dispose");
-        $(tooltipElement).popover(this._buildPopover(repeater));
+        $(tooltipElement).popover(this._buildPopover(repeaters));
         $(tooltipElement).popover("show");
       } else {
         $(tooltipElement).popover("dispose");
@@ -147,14 +150,22 @@ export class RepatersMap {
     });
   }
 
-  _buildPopover(repeater) {
-    const frequency = parseInt(repeater.frequency).toLocaleString("ES-ar");
+  _buildPopover(repeaters) {
+    const firstRepeater = repeaters[0];
     return {
       placement: "top",
       html: true,
-      title: repeater.name,
-      content: `Frequencia: ${frequency} KHz (${repeater.diff})<br/>
-                Subtono: ${repeater.subtone}`,
+      title: `${firstRepeater.signal} - ${firstRepeater.name}`,
+      content: repeaters
+        .filter((repeater) => repeater.signal === firstRepeater.signal)
+        .map((repeater) => {
+          const frequency = parseInt(repeater.frequency).toLocaleString(
+            "ES-ar"
+          );
+          return `Frequencia: ${frequency} KHz (${repeater.diff})<br/>
+                  Subtono: ${repeater.subtone}`;
+        })
+        .join("<hr/>"),
     };
   }
 
