@@ -21,7 +21,7 @@ async function getSheet() {
 }
 
 async function getRows() {
-  const rowsCount = 250;
+  const rowsCount = 500;
   const sheet = await getSheet();
   await sheet.loadCells(`A2:G${rowsCount + 1}`);
   const rows = [...Array(rowsCount).keys()]
@@ -36,6 +36,10 @@ async function getRows() {
         latitude: sheet.getCell(rowIndex, 5).formattedValue,
         longitude: sheet.getCell(rowIndex, 6).formattedValue,
       };
-    });
+    })
+    .filter(
+      (repeater) =>
+        !!repeater.signal && !!repeater.latitude && !!repeater.longitude
+    );
   return rows;
 }
